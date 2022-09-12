@@ -52,6 +52,20 @@ stats = solve!(solver, nlp)
 "Execution stats: first-order stationary"
 ```
 """
+
+function get_status(nlp; elapsed_time = 0.0, optimal = false, max_eval = Inf, max_time = Inf)
+    if optimal
+      :first_order
+    elseif neval_obj(nlp) > max_eval ≥ 0
+      :max_eval
+    elseif elapsed_time > max_time
+      :max_time
+    else
+      :unknown
+    end
+  end
+
+
 mutable struct R2Solver{T, V}
   x::V
   gx::V
@@ -120,7 +134,7 @@ function solve!(
     @info @sprintf "%5s  %9s  %7s  %7s " "iter" "f" "‖∇f‖" "σ"
     @info @sprintf "%5d  %9.2e  %7.1e  %7.1e" output.iter output.objective norm_∇fk σk
   end
-  if verbose > 0 && mod(iter, verbose) == 0
+  if verbose > 0 && mod(output.iter, verbose) == 0
     @info @sprintf "%5s  %9s  %7s  %7s " "iter" "f" "‖∇f‖" "σ"
     infoline = @sprintf "%5d  %9.2e  %7.1e  %7.1e" output.iter output.objective norm_∇fk σk
   end
@@ -177,9 +191,9 @@ function solve!(
     output.dual_feas = norm_∇fk
     optimal = norm_∇fk ≤ ϵ
 
-    if verbose > 0 && mod(iter, verbose) == 0
+    if verbose > 0 && mod(output.iter, verbose) == 0
       @info infoline
-      infoline = @sprintf "%5d  %9.2e  %7.1e  %7.1e" iter fk norm_∇fk σk
+      infoline = @sprintf "%5d  %9.2e  %7.1e  %7.1e" output.iter output.objective norm_∇fk σk
     end
 
     output.status = get_status(

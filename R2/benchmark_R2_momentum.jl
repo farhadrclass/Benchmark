@@ -13,6 +13,10 @@ using SolverBenchmark
 include("R2.jl")
 
 
+
+  
+
+
 T=Float64
 
 # load the problems:
@@ -27,27 +31,12 @@ solver = Dict(
         :R2_Momentum_9 => 
             nlp -> R2(
                 nlp;
-                maxiterations=1000,
-                η1 = 0.3,
-                η2 = 0.7,
-                γ1 = 1 / 2,
-                γ2 = 2.0,
-                ϵ_abs = 1e-6,
-                ϵ_rel = 1e-6,
                 β=0.9, #testing the momentum 0.9
-                verbose = false),
+                ),
         :R2 => 
             nlp -> R2(
                 nlp;
-                maxiterations=1000,
-                η1 = 0.3,
-                η2 = 0.7,
-                γ1 = 1 / 2,
-                γ2 = 2.0,
-                ϵ_abs = 1e-6,
-                ϵ_rel = 1e-6,
-                β=0.0, #testing the momentum 0.0
-                verbose = false)
+            )
             )
 
 
