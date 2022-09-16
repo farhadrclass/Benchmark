@@ -25,7 +25,7 @@ problems = (
   problem ∈ setdiff(names(OptimizationProblems.ADNLPProblems), [:ADNLPProblems])
 )
 
-
+println("Getting the problems")
 # Create a dictionary for the solver: 
 solver = Dict(
         :R2_Momentum_9 => 
@@ -40,9 +40,9 @@ solver = Dict(
             )
 
 
-
+println("Starting the benchmark")
 # benchmark the problems
-stats = bmark_solvers(solver, problems, skipif = prob -> (!unconstrained(prob) || get_nvar(prob) > 100 || get_nvar(prob) < 5))
+stats = bmark_solvers(solver, problems, skipif = prob -> (!unconstrained(prob) || get_nvar(prob) > 20 || get_nvar(prob) < 5))
 
 columns = [:id, :name, :nvar, :objective, :dual_feas, :neval_obj, :neval_grad, :neval_hess, :iter, :elapsed_time, :status]
 header = Dict(
@@ -54,7 +54,7 @@ header = Dict(
   :neval_hprod => "# ∇²f v",
   :elapsed_time => "t",
 )
-
+println("Print the stats")
 for solver ∈ keys(solver)
     pretty_stats(stats[solver][!, columns], hdr_override=header)
 end

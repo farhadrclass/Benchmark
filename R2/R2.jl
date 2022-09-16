@@ -78,7 +78,7 @@ function R2Solver(nlp::AbstractNLPModel{T, V}) where {T, V}
   x = similar(nlp.meta.x0)
   gx = similar(nlp.meta.x0)
   cx = similar(nlp.meta.x0)
-  d = zero(similar(nlp.meta.x0))
+  d = fill!(similar(nlp.meta.x0), 0)
   output = GenericExecutionStats(:unknown, nlp, solution = x)
   return R2Solver{T, V}(x, gx, cx, d, output)
 end
