@@ -26,7 +26,7 @@ Y = [nlp.meta.x0[2]]
 #   end
 # end
 println("with β=0.8")
-R2(nlp;β=0.8,verbose=1)
+R2(nlp; β = 0.8, verbose = 1)
 println("++++++++++++++++++++++++++++++++++\nwith β=0.0")
 
-R2(nlp;verbose=1)
+R2(nlp; verbose = 1)
