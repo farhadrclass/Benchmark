@@ -61,16 +61,18 @@ header = Dict(
 for solver ∈ keys(solvers)
   pretty_stats(stats[solver][!, cols], hdr_override = header)
 end
-# first_order(df) = df.status .== :first_order
-# unbounded(df) = df.status .== :unbounded
-# solved(df) = first_order(df) .| unbounded(df)
-# costnames = ["time", "obj + grad + hess"]
-# costs = [
-#   df -> .!solved(df) .* Inf .+ df.elapsed_time,
-#   df -> .!solved(df) .* Inf .+ df.neval_obj .+ df.neval_grad .+ df.neval_hess,
-# ]
 
-# using Plots
-# gr()
 
-# profile_solvers(stats, costs, costnames)
+first_order(df) = df.status .== :first_order
+unbounded(df) = df.status .== :unbounded
+solved(df) = first_order(df) .| unbounded(df)
+costnames = ["time", "obj + grad + hess"]
+costs = [
+  df -> .!solved(df) .* Inf .+ df.elapsed_time,
+  df -> .!solved(df) .* Inf .+ df.neval_obj .+ df.neval_grad .+ df.neval_hess,
+]
+
+using Plots
+gr()
+
+profile_solvers(stats, costs, costnames)
