@@ -23,10 +23,10 @@ problems =
 #   :trunk => model -> trunk(model, atol=1e-5, rtol=0.0),
 # )
 
-solvers = Dict(:R2_Momentum_9 => nlp -> R2(
+solvers = Dict(:R2_Momentum => nlp -> R2(
   nlp;
   # max_eval=10,
-  β = T(0.9), #testing the momentum 0.9
+  β = T(0.3), #testing the momentum 0.9
 ), :R2 => nlp -> R2(nlp))
 
 stats = bmark_solvers(
