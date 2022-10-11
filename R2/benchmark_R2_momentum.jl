@@ -13,21 +13,30 @@ using SolverBenchmark
 # include("R2.jl")
 
 # T = Float64
-T=  Float32
+T = Float32
 
 problems =
   (eval(Meta.parse(problem))(type = Val(T)) for problem ∈ OptimizationProblems.meta[!, :name])
+# (eval(Meta.parse(problem))(type = Val(T)) for problem ∈ OptimizationProblems.meta[!, :name]) # DataFrames and we can choose sub problems
 
 # solvers = Dict(
 #   :lbfgs => model -> lbfgs(model, mem=5, atol=1e-5, rtol=0.0),
 #   :trunk => model -> trunk(model, atol=1e-5, rtol=0.0),
 # )
 
-solvers = Dict(:R2_Momentum => nlp -> R2(
-  nlp;
-  # max_eval=10,
-  β = T(0.3), #testing the momentum 0.9
-), :R2 => nlp -> R2(nlp))
+solvers = Dict(
+  :R2_Momentum_3 => nlp -> R2(
+    nlp;
+    # max_eval = 10,
+    β = T(0.3), #testing the momentum 0.9
+  ),
+  :R2 => nlp -> R2(nlp),
+  :R2_Momentum_9 => nlp -> R2(
+    nlp;
+    # max_eval = 10,
+    β = T(0.9), #testing the momentum 0.9
+  ),
+)
 
 stats = bmark_solvers(
   solvers,
@@ -62,14 +71,14 @@ for solver ∈ keys(solvers)
   pretty_stats(stats[solver][!, cols], hdr_override = header)
 end
 
-
 first_order(df) = df.status .== :first_order
 unbounded(df) = df.status .== :unbounded
 solved(df) = first_order(df) .| unbounded(df)
-costnames = ["time", "obj + grad + hess"]
+costnames = ["time", "obj + grad + hess", "obj"]
 costs = [
   df -> .!solved(df) .* Inf .+ df.elapsed_time,
   df -> .!solved(df) .* Inf .+ df.neval_obj .+ df.neval_grad .+ df.neval_hess,
+  df -> .!solved(df) .* Inf .+ df.neval_obj,
 ]
 
 using Plots
