@@ -13,8 +13,8 @@ using SolverBenchmark
 # using GenericExecutionStats
 # include("R2.jl")
 
-# T = Float64
-T = Float32
+T = Float64
+# T = Float32
 
 problems =
   (eval(Meta.parse(problem))(type = Val(T)) for problem ∈ OptimizationProblems.meta[!, :name])
@@ -30,13 +30,14 @@ solvers = Dict(
     nlp;
     max_time=60.0,
     # max_eval = 10,
-    atol=T(0.0001),
+    # atol=T(0.0001),
     β = T(0.3), #testing the momentum 0.9
   ),
-  :R2 => nlp -> R2(nlp;atol=T(0.0001),    max_time=60.0  ),
+  :R2 => nlp -> R2(nlp;#atol=T(0.0001),
+      max_time=60.0  ),
   :R2_Momentum_9 => nlp -> R2(
     nlp;
-    atol=T(0.0001),
+    # atol=T(0.0001),
     # max_eval = 10,
     max_time=60.0,
     β = T(0.9), #testing the momentum 0.9
