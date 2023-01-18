@@ -28,18 +28,21 @@ problems =
 solvers = Dict(
   :R2_Momentum_3 => nlp -> R2(
     nlp;
-    max_time=60.0,
-    # max_eval = 10,
+    max_time = 60.0,
+    # max_eval = 2,
     # atol=T(0.0001),
     β = T(0.3), #testing the momentum 0.9
   ),
-  :R2 => nlp -> R2(nlp;#atol=T(0.0001),
-      max_time=60.0  ),
+  :R2 => nlp -> R2(
+    nlp;#atol=T(0.0001),
+    max_time = 60.0,
+    # max_eval = 2,
+  ),
   :R2_Momentum_9 => nlp -> R2(
     nlp;
     # atol=T(0.0001),
-    # max_eval = 10,
-    max_time=60.0,
+    # max_eval = 2,
+    max_time = 60.0,
     β = T(0.9), #testing the momentum 0.9
   ),
 )
@@ -81,16 +84,18 @@ end
 
 #write to file 
 for solver ∈ keys(solvers)
-  s = "R2//Result//"*string( getname(T))*string(solver)
-  open(s*".txt","w") do io
-    pretty_stats(io,stats[solver][!, cols], hdr_override = header)
+  st =  string(getname(T)) * string(solver)
+  open(st * ".txt", "w") do io
+    pretty_stats(io, stats[solver][!, cols], hdr_override = header)
   end
-  open(s*".tex","w") do io
-    latex_table(io,stats[solver][!, cols], hdr_override = header)
+  open(st * ".tex", "w") do io
+    println(io, "\\documentclass[varwidth=20cm,crop=true]{standalone}")
+    println(io, "\\usepackage{longtable}[=v4.13]")
+    println(io, "\\begin{document}")
+    pretty_latex_stats(io, stats[solver][!, cols], hdr_override = header)
+    println(io, "\\end{document}")
   end
 end
-  
-
 
 first_order(df) = df.status .== :first_order
 unbounded(df) = df.status .== :unbounded
@@ -105,5 +110,7 @@ costs = [
 using Plots
 gr()
 
-profile_solvers(stats, costs, costnames)
-
+p = profile_solvers(stats, costs, costnames)
+# sp ="//R2//Result//" * string(getname(T)) * string(solver)
+sp = string(getname(T)) *"_profile"
+Plots.svg(p, sp)
