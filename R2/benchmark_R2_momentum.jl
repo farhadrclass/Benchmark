@@ -13,8 +13,8 @@ using SolverBenchmark
 # using GenericExecutionStats
 # include("R2.jl")
 
-T = Float64
-# T = Float32
+# T = Float64
+T = Float32
 
 problems =
   (eval(Meta.parse(problem))(type = Val(T)) for problem ∈ OptimizationProblems.meta[!, :name])
@@ -100,7 +100,7 @@ end
 first_order(df) = df.status .== :first_order
 unbounded(df) = df.status .== :unbounded
 solved(df) = first_order(df) .| unbounded(df)
-costnames = ["time", "obj + grad + hess", "obj"]
+costnames = ["time", "obj + grad + hess", "iter"]
 costs = [
   df -> .!solved(df) .* Inf .+ df.elapsed_time,
   df -> .!solved(df) .* Inf .+ df.neval_obj .+ df.neval_grad .+ df.neval_hess,
