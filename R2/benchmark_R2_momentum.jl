@@ -112,8 +112,8 @@ end
 first_order(df) = df.status .== :first_order
 unbounded(df) = df.status .== :unbounded
 solved(df) = first_order(df) .| unbounded(df)
-# costnames = ["time", "obj + grad + hess", "iter"]
-costnames = ["time"]
+costnames = ["time", "obj + grad + hess", "iter"]
+# costnames = ["time"]
 costs = [
   df -> .!solved(df) .* Inf .+ df.elapsed_time,
   df -> .!solved(df) .* Inf .+ df.neval_obj .+ df.neval_grad .+ df.neval_hess,
@@ -121,8 +121,27 @@ costs = [
 ]
 using Plots
 gr()
+# p = profile_solvers(stats, costs, costnames)
+### or using Plots
+# pyplot()
+p = performance_profile(stats, df -> .!solved(df) .* Inf .+ df.elapsed_time)
 
-p = profile_solvers(stats, costs, costnames)
-# sp ="//R2//Result//" * string(getname(T)) * string(solver)
+for i in 1:3
+  if p.series_list[i][:label] == "R2_Momentum_3"
+    p.series_list[i][:label] ="β=0.3"
+  elseif p.series_list[i][:label] == "R2_Momentum_9"
+    p.series_list[i][:label] ="β=0.9"
+  elseif p.series_list[i][:label] == "R2"
+    p.series_list[i][:label] ="β=0.0"
+  end 
+
+end
+display(p)
+
+#TODO Then, for the labels, you can check the xlabel and ylabel function applied to pbefore Plots.svg(p, sp)
+
 sp = string(getname(T)) * "_profile"
 Plots.svg(p, sp)
+
+
+
